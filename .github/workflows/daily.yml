@@ -1,0 +1,25 @@
+name: Global Money Flow Update
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch: # 支援手動觸發更新
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with: {python-version: '3.9'}
+      - name: Install dependencies
+        run: pip install yfinance
+      - name: Update Data
+        run: python update_data.py
+      - name: Commit and Push
+        run: |
+          git config --global user.name "V_Hierophant_Bot"
+          git config --global user.email "bot@example.com"
+          git add data.json
+          git commit -m "Update data: $(date)" || exit 0
+          git push
