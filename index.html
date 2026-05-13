@@ -1,18 +1,62 @@
 <!DOCTYPE html>
-<html style="background-color: #121212; color: #e0e0e0;">
+<html lang="zh-TW">
 <head>
-    <title>Global Money Flow Hub</title>
+    <meta charset="UTF-8">
+    <title>全球金流觀測站 - Dark Mode</title>
+    <!-- 引入 ECharts 圖表庫 -->
     <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <style>
+        body { background-color: #121212; margin: 0; padding: 20px; font-family: sans-serif; color: #e0e0e0; }
+        #main-chart { width: 100%; height: 600px; background: #1e1e1e; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        h1 { text-align: center; color: #00ffcc; }
+    </style>
 </head>
 <body>
-    <div id="chart" style="width: 100%; height: 600px;"></div>
+    <h1>全球金流動向實時看板</h1>
+    <div id="main-chart"></div>
+
     <script>
+        // 1. 初始化圖表，設定為深色主題
+        var chart = echarts.init(document.getElementById('main-chart'), 'dark');
+
+        // 2. 抓取 Python 腳本產生的 data.json
         fetch('./data.json')
-            .then(res => res.json())
+            .then(response => response.json())
             .then(data => {
-                // 在此初始化 ECharts，載入 data['USD_Index'] 等數據
-                // 設定主題為 'dark'
+                // 假設我們以「美元指數 (USD_Index)」作為主視覺
+                const usdData = data.USD_Index;
+                const dates = Object.keys(usdData).sort(); // 排序日期
+                const values = dates.map(d => usdData[d]);
+
+                // 3. 設定圖表樣式與數據
+                const option = {
+                    backgroundColor: 'transparent',
+                    title: { text: '美元指數 (USD Index) 趨勢', left: 'center', textStyle: { color: '#00ffcc' } },
+                    tooltip: { trigger: 'axis' },
+                    xAxis: { type: 'category', data: dates, axisLine: { lineStyle: { color: '#666' } } },
+                    yAxis: { type: 'value', scale: true, splitLine: { lineStyle: { color: '#333' } } },
+                    series: [{
+                        data: values,
+                        type: 'line',
+                        smooth: true,
+                        itemStyle: { color: '#00ffcc' },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(0, 255, 204, 0.3)' },
+                                { offset: 1, color: 'rgba(0, 255, 204, 0)' }
+                            ])
+                        }
+                    }]
+                };
+                chart.setOption(option);
+            })
+            .catch(error => {
+                console.error('數據加載失敗:', error);
+                document.getElementById('main-chart').innerHTML = '<p style="text-align:center; padding-top:200px;">尚未偵測到 data.json，請確認 Python 腳本是否已成功執行並產生檔案。</p>';
             });
+
+        // 隨視窗大小調整圖表
+        window.onresize = function() { chart.resize(); };
     </script>
 </body>
 </html>
