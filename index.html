@@ -2,61 +2,250 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>全球金流觀測站 - Dark Mode</title>
-    <!-- 引入 ECharts 圖表庫 -->
-    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>融券模擬器 / Short Selling Simulator</title>
     <style>
-        body { background-color: #121212; margin: 0; padding: 20px; font-family: sans-serif; color: #e0e0e0; }
-        #main-chart { width: 100%; height: 600px; background: #1e1e1e; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        h1 { text-align: center; color: #00ffcc; }
+        :root {
+            --bg-color: #121212;
+            --panel-bg: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-sub: #888888;
+            --border-color: #333333;
+            --accent-silver: #cccccc;
+            --profit-green: #4caf50;
+            --loss-red: #f44336;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            padding: 40px 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        /* 日式幾何裝飾線 */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 20px;
+            height: 20px;
+            border-top: 1px solid var(--accent-silver);
+            border-left: 1px solid var(--accent-silver);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 5px;
+            color: var(--accent-silver);
+        }
+
+        .subtitle {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            text-align: center;
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .label-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .value-display {
+            font-weight: 600;
+            color: var(--accent-silver);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            -webkit-appearance: none;
+            background: var(--border-color);
+            height: 2px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--accent-silver);
+            border-radius: 0%; /* 幾何正方形 */
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.3);
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 30px 0;
+        }
+
+        .result-panel {
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+
+        .result-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .status-box {
+            margin-top: 25px;
+            padding: 12px;
+            font-size: 0.85rem;
+            text-align: center;
+            border: 1px dashed var(--border-color);
+            color: var(--text-sub);
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
-    <h1>全球金流動向實時看板</h1>
-    <div id="main-chart"></div>
 
-    <script>
-        // 1. 初始化圖表，設定為深色主題
-        var chart = echarts.init(document.getElementById('main-chart'), 'dark');
+<div class="container">
+    <h1>融券交易模擬器</h1>
+    <div class="subtitle">SHORT SELLING SIMULATOR</div>
 
-        // 2. 抓取 Python 腳本產生的 data.json
-        fetch('./data.json')
-            .then(response => response.json())
-            .then(data => {
-                // 假設我們以「美元指數 (USD_Index)」作為主視覺
-                const usdData = data.USD_Index;
-                const dates = Object.keys(usdData).sort(); // 排序日期
-                const values = dates.map(d => usdData[d]);
+    <!-- 步驟一：高價借賣 -->
+    <div class="input-group">
+        <div class="label-container">
+            <span>步驟 1：融券賣出價 (借鞋來賣)</span>
+            <span class="value-display" id="sellPriceOld">NT$ 100</span>
+        </div>
+        <input type="range" id="sellPrice" min="10" max="200" value="100">
+    </div>
 
-                // 3. 設定圖表樣式與數據
-                const option = {
-                    backgroundColor: 'transparent',
-                    title: { text: '美元指數 (USD Index) 趨勢', left: 'center', textStyle: { color: '#00ffcc' } },
-                    tooltip: { trigger: 'axis' },
-                    xAxis: { type: 'category', data: dates, axisLine: { lineStyle: { color: '#666' } } },
-                    yAxis: { type: 'value', scale: true, splitLine: { lineStyle: { color: '#333' } } },
-                    series: [{
-                        data: values,
-                        type: 'line',
-                        smooth: true,
-                        itemStyle: { color: '#00ffcc' },
-                        areaStyle: {
-                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                                { offset: 0, color: 'rgba(0, 255, 204, 0.3)' },
-                                { offset: 1, color: 'rgba(0, 255, 204, 0)' }
-                            ])
-                        }
-                    }]
-                };
-                chart.setOption(option);
-            })
-            .catch(error => {
-                console.error('數據加載失敗:', error);
-                document.getElementById('main-chart').innerHTML = '<p style="text-align:center; padding-top:200px;">尚未偵測到 data.json，請確認 Python 腳本是否已成功執行並產生檔案。</p>';
-            });
+    <!-- 步驟二：低價買還 -->
+    <div class="input-group">
+        <div class="label-container">
+            <span>步驟 2：未來回補價 (買鞋來還)</span>
+            <span class="value-display" id="buyPriceOld">NT$ 60</span>
+        </div>
+        <input type="range" id="buyPrice" min="10" max="200" value="60">
+    </div>
 
-        // 隨視窗大小調整圖表
-        window.onresize = function() { chart.resize(); };
-    </script>
+    <div class="divider"></div>
+
+    <!-- 結算面板 -->
+    <div class="result-panel">
+        <div class="result-row">
+            <span>自備保證金 (約 90%)</span>
+            <span id="marginCost">NT$ 90</span>
+        </div>
+        <div class="result-row">
+            <span>每股盈虧差價</span>
+            <span id="priceDiff">NT$ +40</span>
+        </div>
+        <div class="result-row result-total">
+            <span>預估報酬率 (ROI)</span>
+            <span id="roiResult" style="color: var(--profit-green);">+44.4%</span>
+        </div>
+    </div>
+
+    <div class="status-box" id="statusMessage">
+        當前股價下跌，您成功高賣低買，實現看空獲利。
+    </div>
+</div>
+
+<script>
+    const sellPriceInput = document.getElementById('sellPrice');
+    const buyPriceInput = document.getElementById('buyPrice');
+    const sellPriceOld = document.getElementById('sellPriceOld');
+    const buyPriceOld = document.getElementById('buyPriceOld');
+    
+    const marginCost = document.getElementById('marginCost');
+    const priceDiff = document.getElementById('priceDiff');
+    const roiResult = document.getElementById('roiResult');
+    const statusMessage = document.getElementById('statusMessage');
+
+    function calculate() {
+        const sell = parseFloat(sellPriceInput.value);
+        const buy = parseFloat(buyPriceInput.value);
+        
+        // 更新輸入數值顯示
+        sellPriceOld.textContent = `NT$ ${sell}`;
+        buyPriceOld.textContent = `NT$ ${buy}`;
+        
+        // 台灣市場融券保證金通常為 90%
+        const margin = sell * 0.9;
+        const diff = sell - buy;
+        const roi = (diff / margin) * 100;
+
+        // 更新計算結果
+        marginCost.textContent = `NT$ ${margin.toFixed(0)}`;
+        
+        if (diff >= 0) {
+            priceDiff.textContent = `NT$ +${diff}`;
+            priceDiff.style.color = 'var(--profit-green)';
+            roiResult.textContent = `+${roi.toFixed(1)}%`;
+            roiResult.style.color = 'var(--profit-green)';
+            statusMessage.textContent = "【市場如預期下跌】您成功在低位買回股票歸還，實現利潤。";
+        } else {
+            priceDiff.textContent = `NT$ ${diff}`;
+            priceDiff.style.color = 'var(--loss-red)';
+            roiResult.textContent = `${roi.toFixed(1)}%`;
+            roiResult.style.color = 'var(--loss-red)';
+            statusMessage.textContent = "【遭遇軋空風險】股價不跌反漲！您必須花更高的代價買回股票，產生虧損。";
+        }
+    }
+
+    sellPriceInput.addEventListener('input', calculate);
+    buyPriceInput.addEventListener('input', calculate);
+    
+    // 初始化計算
+    calculate();
+</script>
+
 </body>
 </html>
