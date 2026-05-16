@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>高級財務專案 — 融券與做空實戰全攻略</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght=300;400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #FAF7F2;
@@ -121,7 +121,7 @@
   .chapter-subtitle { color: var(--ink-muted); font-size: 0.95rem; }
 
   /* ── CONTENT CARDS ── */
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 32px; margin-bottom: 20px; box-shadow: var(--shadow); position: relative; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 32px; margin-bottom: 20px; box-shadow: var(--shadow); }
   .card-title { font-family: 'Noto Serif TC', serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
   .card-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
   .icon-orange { background: var(--accent-light); }
@@ -130,242 +130,414 @@
   .icon-gold   { background: var(--gold-light); }
   .icon-dark   { background: var(--ink); color: white; }
 
+  .card p { color: var(--ink); font-size: 0.93rem; margin-bottom: 12px; }
+  .card p strong { color: var(--ink); font-weight: 600; }
+  .card ul { margin-left: 20px; margin-bottom: 12px; font-size: 0.91rem; color: var(--ink); }
+  .card li { margin-bottom: 4px; }
+
   /* ── ANALOGY & HIGHLIGHT ── */
-  .analogy { background: var(--accent-pale); border-left: 4px solid var(--accent); padding: 16px 20px; margin: 16px 0; font-size: 0.9rem; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+  .analogy { background: var(--accent-pale); border-left: 4px solid var(--accent); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 16px 20px; margin: 16px 0; font-size: 0.9rem; }
   .analogy-label { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 6px; }
   .highlight { background: var(--green-light); border-radius: var(--radius-sm); padding: 14px 18px; font-size: 0.88rem; color: var(--green); margin: 12px 0; border: 1px solid #B7E4C7; }
   .highlight.blue { background: var(--blue-light); color: var(--blue); border-color: #AEC6E8; }
   .highlight.gold { background: var(--gold-light); color: var(--gold); border-color: #DCC078; }
 
+  /* ── COMPARISON TABLE ── */
+  .compare-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin: 16px 0; }
+  .compare-item { border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 16px; text-align: center; background: #FFFBF7; }
+  .compare-item .label { font-size: 0.75rem; color: var(--ink-muted); margin-bottom: 6px; }
+  .compare-item .value { font-family: 'Noto Serif TC', serif; font-size: 1.3rem; font-weight: 700; }
+  .compare-item.accent-border { border-color: var(--accent); background: #FFF9F5; }
+
   /* ── SIMULATOR STYLES ── */
   .sim-input-group { margin-bottom: 20px; }
-  .sim-label-row { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 8px; font-weight: 500; }
-  input[type="range"] { width: 100%; -webkit-appearance: none; background: var(--border); height: 4px; border-radius: 2px; outline: none; }
-  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--accent); border-radius: 50%; cursor: pointer; }
-  .sim-result-panel { background: var(--bg); padding: 20px; border-radius: var(--radius-sm); margin-top: 20px; border: 1px solid var(--border); }
-  .sim-result-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 10px; }
-  .sim-result-total { font-size: 1.1rem; font-weight: 700; border-top: 1px solid var(--border); padding-top: 10px; }
-
-  /* ── QUIZ SECTION ── */
-  .quiz-section { background: var(--ink); border-radius: var(--radius); padding: 32px; margin-top: 32px; color: #FAF7F2; }
-  .quiz-badge { background: var(--accent); color: white; font-size: 0.72rem; padding: 4px 10px; border-radius: 99px; }
-  .quiz-opt { background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.15); border-radius: var(--radius-sm); padding: 14px 18px; cursor: pointer; color: #FAF7F2; margin-bottom: 10px; width: 100%; text-align: left; }
-  .quiz-opt.correct { background: rgba(45,106,79,0.4); border-color: #52B788; }
-  .quiz-opt.wrong { background: rgba(192,57,43,0.3); border-color: #E74C3C; }
-  .quiz-feedback { padding: 14px 18px; font-size: 0.88rem; display: none; border-radius: var(--radius-sm); margin-bottom: 16px; }
-  .quiz-feedback.show { display: block; }
+  .sim-label-row { display: flex; justify-content: space-between; font-size: 0.88rem; margin-bottom: 8px; font-weight: 500; }
+  input[type="range"] { width: 100%; -webkit-appearance: none; background: var(--border); height: 6px; border-radius: 99px; outline: none; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; background: var(--accent); border-radius: 50%; cursor: pointer; border: 2px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+  .sim-result-panel { background: var(--bg); padding: 22px; border-radius: var(--radius-sm); margin-top: 20px; border: 1px solid var(--border); }
+  .sim-result-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 12px; color: var(--ink); }
+  .sim-result-total { font-size: 1.1rem; font-weight: 700; border-top: 1.5px solid var(--border); padding-top: 12px; margin-bottom: 0; }
+  .sim-message-box { padding: 16px; border-radius: var(--radius-sm); margin-top: 20px; font-size: 0.88rem; line-height: 1.6; border: 1px solid transparent; transition: all 0.3s; text-align: left; }
 
   /* ── RISK METER ── */
   .risk-meter { display: flex; align-items: center; gap: 6px; margin: 10px 0; font-size: 0.85rem; }
+  .risk-label { color: var(--ink-muted); min-width: 48px; }
   .risk-bar { display: flex; gap: 3px; }
   .risk-dot { width: 18px; height: 8px; border-radius: 99px; background: var(--border); }
-  .risk-dot.filled-red { background: #C0392B; }
+  .risk-dot.filled-green { background: var(--green); }
+  .risk-dot.filled-gold  { background: var(--gold); }
+  .risk-dot.filled-red   { background: #C0392B; }
+
+  /* ── QUIZ SECTION ── */
+  .quiz-section { background: var(--ink); border-radius: var(--radius); padding: 32px; margin-top: 32px; color: #FAF7F2; }
+  .quiz-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+  .quiz-badge { background: var(--accent); color: white; font-size: 0.72rem; padding: 4px 10px; border-radius: 99px; font-weight: 500; }
+  .quiz-title-text { font-family: 'Noto Serif TC', serif; font-size: 1rem; font-weight: 600; }
+  .quiz-q { font-size: 1rem; margin-bottom: 20px; line-height: 1.6; color: #F5F0E8; }
+  .quiz-options { display: grid; gap: 12px; margin-bottom: 16px; }
+  .quiz-opt { background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.15); border-radius: var(--radius-sm); padding: 14px 18px; cursor: pointer; color: #FAF7F2; font-size: 0.88rem; text-align: left; transition: all 0.2s; font-family: 'Noto Sans TC', sans-serif; line-height: 1.5; }
+  .quiz-opt:hover:not(:disabled) { background: rgba(200,98,42,0.2); border-color: var(--accent); }
+  .quiz-opt.correct { background: rgba(45,106,79,0.45); border-color: #52B788; color: #B7E4C7; font-weight: 500; }
+  .quiz-opt.wrong { background: rgba(192,57,43,0.35); border-color: #E74C3C; color: #FADBD8; opacity: 0.8; }
+  .quiz-opt:disabled { cursor: default; }
+  .quiz-feedback { border-radius: var(--radius-sm); padding: 16px 20px; font-size: 0.88rem; display: none; margin-bottom: 16px; line-height: 1.6; }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.correct-fb { background: rgba(45,106,79,0.25); border: 1px solid #52B788; color: #B7E4C7; }
+  .quiz-feedback.wrong-fb { background: rgba(192,57,43,0.2); border: 1px solid #E74C3C; color: #FADBD8; }
 
   /* ── BUTTONS ── */
-  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 99px; cursor: pointer; font-size: 0.88rem; font-weight: 500; border: none; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 99px; border: none; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; font-size: 0.88rem; font-weight: 500; transition: all 0.2s; text-decoration: none; }
   .btn-primary { background: var(--accent); color: white; }
-  .btn-ghost { background: transparent; border: 1.5px solid rgba(255,255,255,0.25); color: #FAF7F2; }
+  .btn-primary:hover { background: #B05520; transform: translateY(-1px); }
+  .btn-ghost { background: transparent; border: 1.5px solid rgba(255,255,255,0.25); color: #FAF7F2; margin-top: 10px; }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.5); }
 
-  /* ── FINAL ── */
+  /* ── FINAL SCREEN ── */
   .final-screen { text-align: center; padding: 60px 20px; }
-  .final-medal { font-size: 4rem; }
+  .final-medal { font-size: 4rem; margin-bottom: 20px; }
+  .final-title { font-family: 'Noto Serif TC', serif; font-size: 2rem; font-weight: 700; margin-bottom: 14px; }
+  .score-display { display: inline-flex; align-items: center; gap: 8px; background: var(--ink); color: #FAF7F2; border-radius: 99px; padding: 10px 24px; font-size: 1rem; margin-top: 12px; }
+  .score-display strong { color: var(--accent); font-size: 1.3rem; }
 
-  @media (max-width: 600px) { .chapter-title { font-size: 1.5rem; } }
+  @media (max-width: 600px) {
+    header { padding: 16px 20px; }
+    .logo { font-size: 1.2rem; }
+    .progress-bar-outer { width: 100px; }
+    .container { padding: 24px 16px 60px; }
+    .card { padding: 20px 16px; }
+    .quiz-section { padding: 22px 18px; }
+    .chapter-title { font-size: 1.5rem; }
+  }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">融券特訓 <span>301</span></div>
+  <div class="logo">高級財務特訓 <span>301</span></div>
   <div class="progress-area">
-    <span class="progress-label">課程進度</span>
+    <span class="progress-label">修業進度</span>
     <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar"></div></div>
     <span class="progress-pct" id="progressPct">0%</span>
   </div>
 </header>
 
 <div class="container">
+
   <nav class="chapter-nav">
-    <button class="chapter-btn active" onclick="goChapter(0)"><span class="dot"></span>1. 直擊本質</button>
-    <button class="chapter-btn" onclick="goChapter(1)"><span class="dot"></span>2. 費曼比喻</button>
-    <button class="chapter-btn" onclick="goChapter(2)"><span class="dot"></span>3. 核心機制</button>
-    <button class="chapter-btn" onclick="goChapter(3)"><span class="dot"></span>4. 致命風險</button>
-    <button class="chapter-btn" onclick="goChapter(4)"><span class="dot"></span>5. 戰術指南</button>
-    <button class="chapter-btn" onclick="goChapter(5)"><span class="dot"></span>6. 實戰模擬</button>
+    <button class="chapter-btn active" onclick="goChapter(0)"><span class="dot"></span>1. 做空本質</button>
+    <button class="chapter-btn" onclick="goChapter(1)"><span class="dot"></span>2. 信用機制</button>
+    <button class="chapter-btn" onclick="goChapter(2)"><span class="dot"></span>3. 致命風險</button>
+    <button class="chapter-btn" onclick="goChapter(3)"><span class="dot"></span>4. 工具對決</button>
+    <button class="chapter-btn" onclick="goChapter(4)"><span class="dot"></span>5. 風控守則</button>
+    <button class="chapter-btn" onclick="goChapter(5)"><span class="dot"></span>6. 放空模擬</button>
   </nav>
 
   <div class="chapter active" id="ch-0">
     <div class="chapter-header">
       <div class="chapter-tag">第一課 · 逆向思維</div>
-      <h1 class="chapter-title">什麼是融券？打破只能「買低賣高」的常規</h1>
+      <h1 class="chapter-title">做空的核心本質：顛覆常識的「高賣低買」</h1>
+      <p class="chapter-subtitle">當市場泡沫破裂、大眾都在賠錢時，如何透過市場下跌化為實質利潤？</p>
     </div>
+
     <div class="card">
-      <div class="card-title"><div class="card-icon icon-orange">📉</div>觀念一：融券的本質</div>
-      <p><strong>融券就是「向證券行借股票先賣掉，等股價下跌再低價買回來還他」的賺錢術。</strong></p>
+      <div class="card-title"><div class="card-icon icon-orange">📉</div>觀念一：交易方向的徹底逆轉</div>
+      <p>常規的股票投資（做多 Long）是「先買進、期待上漲、再賣出」；而<strong>做空（Short Selling）</strong>則是完全相反的逆向思考——**「先賣出、期待下跌、再買回」**。</p>
+      <div class="compare-grid">
+        <div class="compare-item">
+          <div class="label">傳統做多 (Long)</div>
+          <div class="value" style="color:var(--green)">先買低 ➔ 後賣高</div>
+        </div>
+        <div class="compare-item accent-border">
+          <div class="label">逆向做空 (Short)</div>
+          <div class="value" style="color:var(--accent)">先賣高 ➔ 後買低</div>
+        </div>
+      </div>
+      <p>在融券交易中，你的獲利公式變成了：<strong>融券賣出價 － 未來回補價</strong>。因此，你不再期盼企業繁榮，反而是在企業爆發財務危機、產業夕陽化或估值嚴重過高時，精準捕捉其下行波段的獲利機會。</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><div class="card-icon icon-gold">👟</div>觀念二：費曼白話比喻 —— 借黃金太空計畫</div>
+      <p>假設你看壞黃金價格，目前市場上每盎司黃金市價高達 <strong>8 萬元</strong>，但你手裡根本沒有黃金。此時你可以啟動放空計畫：</p>
       <div class="analogy">
-        <div class="analogy-label">💡 核心差異</div>
-        一般買股是「先買後賣」（看多），融券則是「先賣後買」（看空）。
+        <div class="analogy-label">🏠 融券運作生活四步驟</div>
+        <p><strong>1. 借入（融券）：</strong>你跟開銀樓的大哥借了 1 盎司黃金，承諾下個月「還他一模一樣的 1 盎司黃金」，並支付些許租金。</p>
+        <p><strong>2. 高價賣出：</strong>你拿到黃金後，當天立刻在網路上以當前高價 <strong>8 萬元</strong>賣給路人，把 8 萬現金放進口袋。</p>
+        <p><strong>3. 低價買回（回補）：</strong>一個月後，金價果然崩盤，跌到每盎司只剩 <strong>5 萬元</strong>。你拿著手上的錢，花 5 萬元從銀樓買回 1 盎司全新的黃金。</p>
+        <p><strong>4. 歸還結算：</strong>你把這盎司黃金還給大哥。扣除成本後，你平白賺到了 <strong>3 萬元（8萬 - 5萬）</strong>的價差利潤！</p>
       </div>
     </div>
+
     <div class="quiz-section">
-      <div class="quiz-badge">測驗</div>
-      <p class="quiz-q">融券獲利的關鍵在於？</p>
-      <div class="quiz-options">
-        <button class="quiz-opt" onclick="answer(0,0,true)">A. 先高價賣出，未來再低價買回歸還</button>
-        <button class="quiz-opt" onclick="answer(0,1,false)">B. 先低價買進，等待未來高價賣出</button>
+      <div class="quiz-header"><span class="quiz-badge">實戰情境題</span><span class="quiz-title-text">第一課舉一反三確認</span></div>
+      <p class="quiz-q">小華敏銳發現「夕陽科技」基本面嚴重惡化，決定在股價 100 元時對其進行「借券賣出（放空）」1 張（1,000股）。隨後該公司爆發財報造假，股價一路連續跌停到每股 40 元。小華此時決定執行「回補」，並順利買回股票歸還券商結算。在不計任何利息與手續費的極端簡化情況下，請問小華這筆逆向操作的每股純利潤是多少元？他的資產變化邏輯為何？</p>
+      <div class="quiz-options" id="q0-opts">
+        <button class="quiz-opt" onclick="answer(0,0,false)">A. 每股純利潤為 0 元。因為他沒有開盤先買進，股票暴跌到 40 元導致他沒機會賺取上漲波段</button>
+        <button class="quiz-opt" onclick="answer(0,1,true)">B. 每股純利潤為 60 元。因為他先在高位以 100 元賣出，再低位以 40 元買回歸還，高賣低買成功</button>
+        <button class="quiz-opt" onclick="answer(0,2,false)">C. 每股純損失為 60 元。因為股票從 100 元跌到 40 元，代表他借來的資產價值縮水了 60%</button>
       </div>
       <div class="quiz-feedback" id="q0-fb"></div>
-      <button class="btn btn-ghost" onclick="nextChapter(0)" id="q0-next" style="display:none">下一課 →</button>
+      <button class="btn btn-ghost" onclick="nextChapter(0)" id="q0-next" style="display:none">通過！進入第二課 →</button>
     </div>
   </div>
 
   <div class="chapter" id="ch-1">
     <div class="chapter-header">
-      <div class="chapter-tag">第二課 · 費曼白話</div>
-      <h1 class="chapter-title">限量球鞋的太空做空計畫</h1>
+      <div class="chapter-tag">第二課 · 台灣法規機制</div>
+      <h1 class="chapter-title">融券信用交易：保證金與維持率的魔術數字</h1>
+      <p class="chapter-subtitle">回到真實股票市場，信用交易的風險管控被兩大核心數字牢牢鎖定。</p>
     </div>
+
     <div class="card">
-      <div class="card-title"><div class="card-icon icon-green">👟</div>生活類比：限量球鞋</div>
-      <div class="analogy">
-        <p>1. <strong>借鞋：</strong>向大哥借一雙市價 1萬元的鞋。<br>2. <strong>賣掉：</strong>立刻把借來的鞋賣掉換 1萬元現金。<br>3. <strong>買回：</strong>等補貨崩盤到 3千元時買回一雙新鞋。<br>4. <strong>歸還：</strong>把新鞋還給大哥，淨賺 7千元差價。</p>
+      <div class="card-title"><div class="card-icon icon-green">🏦</div>核心機制一：融券保證金成數【90%】</div>
+      <p>向券商借股票不能兩手空空，你必須押一筆高額資金在信用帳戶中。以台灣證券市場為例，<strong>融券保證金成數通常為 90%</strong>。</p>
+      <div class="highlight blue">
+        📌 <strong>實務試算：</strong>如果你想在 100 元時放空一張市值 10 萬元的股票。你必須在戶頭自備 <strong>9 萬元現金（保證金）</strong>。此時，券商那裡幫你保管的總擔保價值為：9 萬元保證金 ＋ 10 萬元賣出股票拿到的價款 ＝ <strong>19 萬元</strong>。
       </div>
     </div>
+
+    <div class="card">
+      <div class="card-title"><div class="card-icon icon-blue">⚖️</div>核心機制二：隨時監控的「融券維持率」【130%】</div>
+      <p>當股價變動時，券商會每天重新計算你的信用安全界線。其精確的公式為：</p>
+      <div class="highlight gold" style="font-family: monospace; text-align:center; font-size: 0.92rem;">
+        融券維持率 ＝ ( 融券保證金 ＋ 融券賣出價款 ) ／ 股票當前最新市場市值 × 100%
+      </div>
+      <p>當股價上漲時（對空方不利），公式分母變大，維持率會快速下滑。<strong>一旦維持率跌破台灣法規規定的 130% 門檻</strong>，券商將發出「融券追繳令」（Margin Call）。若三天內未補足資金至 166% 以上，券商將在開盤直接以市價將你的部位「強制斷頭買回」，空頭只能被迫實現慘重虧損。</p>
+    </div>
+
     <div class="quiz-section">
-      <p class="quiz-q">在球鞋比喻中，你獲利的來源是？</p>
-      <div class="quiz-options">
-        <button class="quiz-opt" onclick="answer(1,0,true)">A. 預期補貨導致鞋價崩盤後的低價差</button>
-        <button class="quiz-opt" onclick="answer(1,1,false)">B. 鞋店大哥送給你的紅包</button>
+      <div class="quiz-header"><span class="quiz-badge">實戰情境題</span><span class="quiz-title-text">第二課深度維持率計算</span></div>
+      <p class="quiz-q">大明在股價 100 元時融券放空了「龍頭股份」1 張（1,000股），自備 90% 保證金（繳交 9 萬元，此時券商保管的總擔保價值為 19 萬元）。不幸遇到突發大利多，該股票不跌反漲，幾天內連續暴漲到每股 150 元。若不計任何利息與手續費，請計算大明此時的「融券維持率」降到了多少？他正面臨什麼實務法規風險？</p>
+      <div class="quiz-options" id="q1-opts">
+        <button class="quiz-opt" onclick="answer(1,0,false)">A. 約 190.0%；處於大幅獲利狀態，完全沒有任何風險</button>
+        <button class="quiz-opt" onclick="answer(1,1,true)">B. 約 126.7%；已跌破 130% 法定死線，將立刻面臨券商追繳通知甚至被強制斷頭</button>
+        <button class="quiz-opt" onclick="answer(1,2,false)">C. 約 60.0%；因為股價上漲了 50 元，導致他的 9 萬元保證金資產直接賠掉了 5 萬元</button>
       </div>
       <div class="quiz-feedback" id="q1-fb"></div>
-      <button class="btn btn-ghost" onclick="nextChapter(1)" id="q1-next" style="display:none">下一課 →</button>
+      <button class="btn btn-ghost" onclick="nextChapter(1)" id="q1-next" style="display:none">通過！進入第三課 →</button>
     </div>
   </div>
 
   <div class="chapter" id="ch-2">
     <div class="chapter-header">
-      <div class="chapter-tag">第三課 · 核心機制</div>
-      <h1 class="chapter-title">保證金與強制回補</h1>
+      <div class="chapter-tag">第三課 · 致命盲點</div>
+      <h1 class="chapter-title">做空的極致風險：收益有限，虧損無限</h1>
+      <p class="chapter-subtitle">為什麼無數金融大師警告：新手在學會成熟風控前，絕對不要輕易碰做空？</p>
     </div>
+
     <div class="card">
-      <div class="card-title"><div class="card-icon icon-blue">🛡️</div>規則：台灣融券保證金</div>
-      <p>在台灣，融券通常需要自備 <strong>90% 的保證金</strong>。例如想放空 10萬元的股票，要先押 9萬元在券商那裡。</p>
-      <div class="highlight blue">⚠️ 法律規定：遇到股東會或除權息，不論盈虧都必須「強制買回」歸還。</div>
+      <div class="card-title"><div class="card-icon icon-orange">🛑</div>盲點一：不對稱的數學陷阱</div>
+      <p>這是放空與一般買現股最本質上的不對稱性：</p>
+      <ul>
+        <li><strong>現股買進（做多）：</strong>你的收益空間無限（股價可以漲好幾倍），但虧損有限（股價最低跌到 0 元，最大虧損上限就是 100% 本金）。</li>
+        <li><strong>融券放空（做空）：</strong>你的**收益空間有限**（股價最低跌到 0 元，你最大的理論獲利也就是 100%），但是你的**虧損空間無限**！因為股價往上漲是沒有天花板的，如果遇到大飆股，你將面臨數倍本金的毀滅性災難。</li>
+      </ul>
     </div>
+
+    <div class="card">
+      <div class="card-title"><div class="card-icon icon-blue">🔥</div>盲點二：強制回補的「定時炸彈」與稀缺成本</div>
+      <p>買股票套牢可以當成傳家寶死抱、安穩領股息。但做空伴隨著兩大硬傷：</p>
+      <p><strong>1. 法定強制回補：</strong>在台灣市場，遇到公司召開**股東常會**或**除權息日**前，無論你此時帳面是賺是賠，法律強制規定放空者必須在截止日前**全部從市場買回股票歸還**，這讓你徹底失去死抱等待下跌的時間彈性。</p>
+      <p><strong>2. 標借與議借規費：</strong>當市場上大家都想放空某一檔熱門股時，券商手裡的股票不夠借，就必須向外面的大股東借。這時會產生按天計價的昂貴「標借費、議借費」，在股票跌下來之前，高昂的隱形成本就可能吸乾你的本金。</p>
+    </div>
+
     <div class="quiz-section">
-      <p class="quiz-q">想放空價值 10 萬元的股票，通常需要自備多少保證金？</p>
-      <div class="quiz-options">
-        <button class="quiz-opt" onclick="answer(2,0,true)">A. 9 萬元 (90%)</button>
-        <button class="quiz-opt" onclick="answer(2,1,false)">B. 1 萬元 (10%)</button>
+      <div class="quiz-header"><span class="quiz-badge">實戰情境題</span><span class="quiz-title-text">第三課深度數學不對稱理解</span></div>
+      <p class="quiz-q">阿嬌同時進行了兩筆獨立交易：她以 100 元現股買進了 B 股票（做多），同時以 100 元融券放空了 C 股票（做空）。不料市場發生極端黑天鵝事件，兩家公司的股價都朝著對阿嬌「最不利」的方向劇烈變動了 5 倍（B 股票直接跌到 0 元下市；C 股票則逆天暴漲到 500 元）。請問阿嬌在這兩筆交易中，各自面臨的「實際虧損百分比（相對於初始投入金額）」有何本質不同？</p>
+      <div class="quiz-options" id="q2-opts">
+        <button class="quiz-opt" onclick="answer(2,0,false)">A. 兩者完全相同。因為都是變動 5 倍，所以兩筆交易各自都產生了 100% 的本金賠光虧損</button>
+        <button class="quiz-opt" onclick="answer(2,1,true)">B. 做多的 B 股票最大實際虧損為 100%（賠光本金）；但做空的 C 股票實際虧損卻高達 444.4%（面臨爆倉與數倍追繳）</button>
+        <button class="quiz-opt" onclick="answer(2,2,false)">C. 做多的 B 股票虧損 500%；做空的 C 股票因為她有自備 90% 保證金，所以只虧損了保證金的 90%</button>
       </div>
       <div class="quiz-feedback" id="q2-fb"></div>
-      <button class="btn btn-ghost" onclick="nextChapter(2)" id="q2-next" style="display:none">下一課 →</button>
+      <button class="btn btn-ghost" onclick="nextChapter(2)" id="q2-next" style="display:none">通過！進入第四課 →</button>
     </div>
   </div>
 
   <div class="chapter" id="ch-3">
     <div class="chapter-header">
-      <div class="chapter-tag">第四課 · 致命風險</div>
-      <h1 class="chapter-title">收益有限，風險無限</h1>
+      <div class="chapter-tag">第四課 · 工具對決</div>
+      <h1 class="chapter-title">全系列看空財務衍生工具大比拼</h1>
+      <p class="chapter-subtitle">除了融券以外，市場上還有哪些看空武器？它們藏了什麼內扣盲點？</p>
     </div>
+
     <div class="card">
-      <div class="card-title"><div class="card-icon icon-orange">🛑</div>數學上的不對稱性</div>
-      <p>股價最低只會跌到 0 元（獲利有天花板），但股價往上漲是<strong>沒有上限</strong>的（虧損是無底洞）。</p>
-      <div class="risk-meter">
-        <span class="risk-label">風險</span>
-        <div class="risk-bar"><div class="risk-dot filled-red"></div><div class="risk-dot filled-red"></div><div class="risk-dot filled-red"></div><div class="risk-dot filled-red"></div><div class="risk-dot filled-red"></div></div>
+      <div class="card-title"><div class="card-icon icon-blue">🛡️</div>看空工具橫向戰略比較</div>
+      <p>若你強烈看空整體大盤或某檔個股，市場上有四種主流工具，其風險特徵有著巨大差別：</p>
+      
+      <div style="display:flex; flex-direction:column; gap:14px; margin-top:10px">
+        <div style="border:1.5px solid var(--border); border-radius:var(--radius-sm); padding:14px 16px; background:#FEF5F5">
+          <div style="font-weight:600; font-size:0.92rem; margin-bottom:4px; color:#C0392B">⚠️ 反向 ETF (如：台灣50反1) —— 盤整市的慢性毒藥</div>
+          <p style="font-size:0.87rem; margin:0; color:#922B21"><strong>機制盲點：</strong>它不需要信用戶、沒有斷頭壓力，看似安全。但它具有**「每日複利再平衡」**與期貨轉倉的高昂內扣費用。當大盤陷入劇烈上下反覆震盪的「盤整市」時，其淨值會產生致命的**波動損耗 (Volatility Drag)**。即使幾年後大盤回到原點，反向 ETF 也早就自動扣血大賠，<strong>絕不適合長期持有</strong>。</p>
+        </div>
+
+        <div style="border:1.5px solid var(--border); border-radius:var(--radius-sm); padding:14px 16px;">
+          <div style="font-weight:600; font-size:0.92rem; margin-bottom:4px;">⚡ 股票期貨 (股期) —— 高槓桿雙刃劍</div>
+          <p style="font-size:0.87rem; margin:0;"><strong>優缺點：</strong>具備約 5.4 倍的高财务槓桿，交易稅與手續費極其便宜，且沒有融券無券可借的問題。但槓桿極高，看錯方向一兩天內就會觸發保證金追繳並被強制平倉。</p>
+        </div>
+
+        <div style="border:1.5px solid var(--border); border-radius:var(--radius-sm); padding:14px 16px;">
+          <div style="font-weight:600; font-size:0.92rem; margin-bottom:4px;">⏳ 認售權證 (Put) —— 損失有限，時間價值遞減</div>
+          <p style="font-size:0.87rem; margin:0;"> smokescreen：最大優點是損失有限（最多權利金歸零），但若大跌獲利驚人。然而它有致命的**「時間價值天天遞減」**硬傷，只要股票盤整不動或跌得不夠快，權證天天都在自動縮水。</p>
+        </div>
       </div>
     </div>
+
     <div class="quiz-section">
-      <p class="quiz-q">為什麼說融券「風險無限」？</p>
-      <div class="quiz-options">
-        <button class="quiz-opt" onclick="answer(3,0,true)">A. 因為股價上漲沒有天花板</button>
-        <button class="quiz-opt" onclick="answer(3,1,false)">B. 因為券商隨時會倒閉</button>
+      <div class="quiz-header"><span class="quiz-badge">實戰情境題</span><span class="quiz-title-text">第四課衍生商品戰術選擇</span></div>
+      <p class="quiz-q">老李預期未來半年整體大盤將陷入極其劇烈的區間來回震盪盤整市（每天單日暴漲或暴跌，但半年後指數最終剛好不漲不跌回到原點）。老李為了中期避險，打算買進並長抱「大盤反向型 ETF（台灣50反1）」。請問在這樣的市場環境下，老李持有一段時間後的結果最可能呈現何種狀態？</p>
+      <div class="quiz-options" id="q3-opts">
+        <button class="quiz-opt" onclick="answer(3,0,false)">A. 完美避險且幾乎損益兩平（僅扣除極微小的手續費），因為半年後指數回到了原點，反向 ETF 也應回到原點</button>
+        <button class="quiz-opt" onclick="answer(3,1,false)">B. 資產大幅翻倍獲利，因為反向 ETF 會在每天暴漲暴跌的波動中，自動吸取雙倍的震盪波動紅利</button>
+        <button class="quiz-opt" onclick="answer(3,2,true)">C. 面臨嚴重的資產內耗與大幅虧損，因為「每日再平衡」的複利損耗與高內扣費會迅速蠶食其淨值</button>
       </div>
       <div class="quiz-feedback" id="q3-fb"></div>
-      <button class="btn btn-ghost" onclick="nextChapter(3)" id="q3-next" style="display:none">下一課 →</button>
+      <button class="btn btn-ghost" onclick="nextChapter(3)" id="q3-next" style="display:none">通過！進入第五課 →</button>
     </div>
   </div>
 
   <div class="chapter" id="ch-4">
     <div class="chapter-header">
-      <div class="chapter-tag">第五課 · 戰術指南</div>
-      <h1 class="chapter-title">空頭武器的黃金原則</h1>
+      <div class="chapter-tag">第五課 · 倖存者心法</div>
+      <h1 class="chapter-title">做空者的鋼鐵紀律與軋空屠殺陷阱</h1>
+      <p class="chapter-subtitle">在金融市場中，做多是順天行道，做空是逆天而行。存活下來的唯一方法是紀律。</p>
     </div>
+
     <div class="card">
-      <div class="card-title"><div class="card-icon icon-gold">🔱</div>三大原則</div>
-      <p>1. <strong>嚴格停損：</strong> 股價不跌反漲時要立刻斷尾求生。<br>2. <strong>時間是敵人：</strong> 融券有利息成本，不適合長期持有。<br>3. <strong>隨時監控：</strong> 緊盯維持率，避免被斷頭。</p>
+      <div class="card-title"><div class="card-icon icon-orange">🔱</div>風控守則：做空者的三條鋼鐵防線</div>
+      <p><strong>守則一：做空是為了「避險短擊」，而非「長線存股」。</strong> 長期而言，人類經濟與優質企業的整體趨勢是通膨且向上的。時間是做空者的敵人，做空只能做為中短期的戰術武器，絕不可盲目死抱。</p>
+      <p><strong>守則二：進場前先寫好「反人性的鐵損價」。</strong> 現股做多套牢可以安撫自己「套牢改當股東、領配息」；做空套牢不砍，面臨的是維持率不足、強制追繳與破產。觸及停損，必須像機器人一樣立刻認賠買回平倉。</p>
+      <p><strong>守則三：絕對不碰「高券資比」與「小型投機妖股」。</strong> 當一檔股票融券留存比例極高、且市值小、成交量低時，它就是市場主力大戶最完美的「軋空誘餌（Short Squeeze）」。主力只要用極少資金就能將股價拉至漲停鎖死，讓放空者在市場上連想買回認賠都完全買不到，眼睜睜看著自己天天跳空爆倉。</p>
     </div>
+
     <div class="quiz-section">
-      <p class="quiz-q">當被「軋空」且股價暴漲時，最佳策略是？</p>
-      <div class="quiz-options">
-        <button class="quiz-opt" onclick="answer(4,0,true)">A. 嚴格執行停損，認賠買回</button>
-        <button class="quiz-opt" onclick="answer(4,1,false)">B. 攤平加碼，死抱二十年等它跌</button>
+      <div class="quiz-header"><span class="quiz-badge">實戰情境題</span><span class="quiz-title-text">第五課危機情境處置</span></div>
+      <p class="quiz-q">小張融券放空了一檔股本極小、且目前市場上「券資比高達 80%」的熱門中小型投機股。隔日該公司爆發神秘主力拉抬，股價天天跳空漲停鎖死。小張連續五天因為維持率不足面臨「斷頭危機」，他心急如焚天天在開盤掛市價單想要「買回認賠停損」，卻因為市場籌碼完全鎖死，連續五天全數無法成交。這種慘烈的市場踩踏現象在金融學上稱為什麼？小張犯了什麼做空大忌？</p>
+      <div class="quiz-options" id="q4-opts">
+        <button class="quiz-opt" onclick="answer(4,0,true)">A. 觸發了毀滅性的「軋空行情（Short Squeeze）」。小張犯了大忌：他不該放空券資比過高且流動性極差的小型投機妖股</button>
+        <button class="quiz-opt" onclick="answer(4,1,false)">B. 這叫「完全填息行情」。小張犯了大忌：他沒有在公司除權息當天同步加碼融券去攤平成本</button>
+        <button class="quiz-opt" onclick="answer(4,2,false)">C. 這叫「價值陷阱反彈」。小張沒有做錯，這只是短期的技術面波動，他應該繼續借錢補交保證金死抱二十年</button>
       </div>
       <div class="quiz-feedback" id="q4-fb"></div>
-      <button class="btn btn-ghost" onclick="nextChapter(4)" id="q4-next" style="display:none">進入實戰模擬器室 →</button>
+      <button class="btn btn-ghost" onclick="nextChapter(4)" id="q4-next" style="display:none">解鎖！進入第六課「實戰演練實驗室」 →</button>
     </div>
   </div>
 
   <div class="chapter" id="ch-5">
     <div class="chapter-header">
       <div class="chapter-tag">第六課 · 實戰演練</div>
-      <h1 class="chapter-title">融券模擬實驗室</h1>
-      <p class="chapter-subtitle">親自動手操作滑桿，觀察股價變動對你資產的真實影響。</p>
+      <h1 class="chapter-title">信用交易：融券維持率實戰模擬實驗室</h1>
+      <p class="chapter-subtitle">親手操控滑桿，動態觀察股價上漲與下跌對真實「融券維持率」與斷頭死線的窒息衝擊。</p>
     </div>
-    <div class="card">
-      <div class="card-title"><div class="card-icon icon-dark">⚙️</div>參數設定</div>
+
+    <div class="card" style="border: 2px solid var(--ink);">
+      <div class="card-title"><div class="card-icon icon-dark">⚙️</div>參數控制面板</div>
       
-      <div class="sim-input-group">
-        <div class="sim-label-row"><span>1. 融券賣出價 (先賣高)</span><span id="sellPriceDisplay">NT$ 100</span></div>
+      <div class="sim-input-group" style="margin-top:20px;">
+        <div class="sim-label-row"><span>1. 融券賣出價格 (先賣高點)</span><span id="sellPriceDisplay" style="font-weight:700; color:var(--accent);">NT$ 100</span></div>
         <input type="range" id="sellPriceInput" min="10" max="200" value="100">
       </div>
 
       <div class="sim-input-group">
-        <div class="sim-label-row"><span>2. 未來回補價 (後買低)</span><span id="buyPriceDisplay">NT$ 60</span></div>
+        <div class="sim-label-row"><span>2. 當前市場股票價格 (未來買回/回補)</span><span id="buyPriceDisplay" style="font-weight:700; color:var(--blue);">NT$ 60</span></div>
         <input type="range" id="buyPriceInput" min="10" max="200" value="60">
       </div>
 
       <div class="sim-result-panel">
-        <div class="sim-result-row"><span>需繳保證金 (90%)</span><span id="marginVal">NT$ 90</span></div>
-        <div class="sim-result-row"><span>每股盈虧</span><span id="diffVal">NT$ +40</span></div>
-        <div class="sim-result-row sim-result-total"><span>預估報酬率 (ROI)</span><span id="roiVal">+44.4%</span></div>
+        <div class="sim-result-row"><span>自備融券保證金 (台灣法定 90%)</span><span id="marginVal" style="font-weight:500;">NT$ 90</span></div>
+        <div class="sim-result-row"><span>券商保管總擔保價值 (保證金 + 賣出價款)</span><span id="collateralVal" style="font-weight:500;">NT$ 190</span></div>
+        
+        <div class="sim-result-row" style="border-bottom: 1px dashed var(--border); padding-bottom: 12px; margin-bottom: 12px;">
+          <span><strong>即時融券維持率 (台灣法定斷頭線：130%)</strong></span>
+          <span id="ratioVal" style="font-size: 1.2rem; font-weight:700;">190.0%</span>
+        </div>
+        
+        <div class="sim-result-row"><span>每股純盈虧差價</span><span id="diffVal" style="font-weight:600;">NT$ +40</span></div>
+        <div class="sim-result-row sim-result-total"><span>預估信用交易報酬率 (ROI)</span><span id="roiVal">+44.4%</span></div>
       </div>
 
-      <div class="highlight" id="simMessage" style="margin-top:20px; text-align:center;">
-        正在模擬中...
+      <div class="sim-message-box" id="simMessage">
+        正在初始化模擬數據...
       </div>
     </div>
-    <div style="text-align:center; margin-top:20px;">
-        <button class="btn btn-primary" onclick="showFinal()">🎉 完成特訓，結算成績</button>
+
+    <div style="text-align:center; margin-top:32px;">
+        <button class="btn btn-primary" onclick="showFinal()">🎉 圓滿完成特訓，結算總成績</button>
     </div>
   </div>
 
-  <div class="chapter" id="ch-final">
+  <div class="chapter" id="ch-6">
     <div class="final-screen">
       <div class="final-medal">🏆</div>
-      <h2 class="final-title">結業證書：融券實戰家</h2>
-      <div id="finalScoreArea"></div>
-      <button class="btn btn-primary" onclick="restart()" style="margin-top:20px">重新挑戰特訓</button>
+      <h2 class="final-title">結業認證：高級信用風控防禦專家</h2>
+      <p class="final-sub" style="max-width:520px; margin:0 auto 24px;">恭喜你通過了所有硬核的實務個案計算與情境測驗！你已經看穿了做空工具的底層邏輯，具備卓越的雙向財務視野。</p>
+      
+      <div id="score-area"></div>
+
+      <div class="final-cards" style="margin-top:40px;">
+        <div class="final-card">
+          <div class="emoji">🚨</div>
+          <div class="fc-title">虧損無限陷阱</div>
+          <div class="fc-desc">股價往上漲沒有天花板。做空交易必須將「嚴格停損」刻進靈魂。</div>
+        </div>
+        <div class="final-card">
+          <div class="emoji">⏱️</div>
+          <div class="fc-title">時間是你的敵人</div>
+          <div class="fc-desc">伴隨每日利息與一年兩次的法令強制回補，屬於高週轉的短線武器。</div>
+        </div>
+        <div class="final-card">
+          <div class="emoji">🩸</div>
+          <div class="fc-title">警惕130%斷頭線</div>
+          <div class="fc-desc">一旦維持率跌破130%將面臨追繳與強制斷頭踩踏。務必保持資金彈性。</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="restart()">重新挑戰特訓</button>
     </div>
   </div>
+
 </div>
 
 <script>
-  const totalChapters = 6;
+  const totalChapters = 5; // 5堂帶有舉一反三題目的核心課程
   let quizDone = new Array(totalChapters).fill(false);
   let correctCount = 0;
+
+  // 深度舉一反三情境題的百字硬核動態教育回饋
+  const quizExplanations = [
+    {
+      correct: "<strong>✨ 答對了！邏輯轉譯非常完美！</strong><br>做空的獲利思維是徹底顛倒的『先高價賣出、未來再低價買回歸還』。小華在 100 元時借股票賣出（套現 10 萬元），在股價跌到 40 元時低價買回股票歸還。其每股純利潤即為：100 － 40 ＝ 60 元（純利潤高達 60%）。你已成功打破單向思維！",
+      wrong: "<strong>❌ 觀念有誤！請注意做空的逆向方向：</strong><br>做空是『先賣後買』。他在 100 元高位先賣出，並在 40 元低位買回股票來歸還。因此他是『穩賺 60 元的跌價差』。股價跌得越深，做空者賺得越多！"
+    },
+    {
+      correct: "<strong>✨ 答對了！精確的財務計算能力！</strong><br><b>維持率分子（擔保總價值）：</b>9萬保證金 ＋ 10萬賣出價款 ＝ 19萬元（此金額鎖死在券商，不會隨股價變動）。<br><b>維持率分母（最新市值）：</b>150元 × 1000股 ＝ 15萬元。<br><b>即時維持率：</b>190,000 ÷ 150,000 × 100% ＝ <b>126.7%</b>。因為低於法規 130% 底線，大明會立刻收到融券追繳令，面臨斷頭危機。太強了，完全融會貫通！",
+      wrong: "<strong>❌ 計算或法規細節漏掉囉：</strong><br>融券維持率分子固定為『保證金 9 萬 ＋ 賣出價款 10 萬 ＝ 19 萬』。分母則是當前最新暴漲的市值『150元 × 1000股 ＝ 15萬』。計算結果 19 ÷ 15 ＝ 126.7%。在台灣，只要低於 130% 就會立刻觸發法令追繳令，絕不能死抱！"
+    },
+    {
+      correct: "<strong>✨ 答對了！深刻看穿了數學上的不對稱性！</strong><br>這正是做空的致命陷阱：做多的 B 股票即使跌到 0 元下市，阿嬌最大的實際虧損就是當初投入的 100% 本金；但做空的 C 股票從 100 元暴漲到 500 元，每股倒賠 400 元，相對於她初始繳交的 90 元保證金本金，她的實際虧損率高達 <b>444.4%</b>，這就是『收益有限（最多賺100%），虧損無限』的數學真相！",
+      wrong: "<strong>❌ 掉入數學陷阱囉！請特別注意：</strong><br>做多股票最低跌到 0 元，最大虧損上限就是 100% 本金；但做空股票上漲沒有天花板，從 100 元漲到 500 元，每股淨虧損達 400 元，這遠遠超過了阿嬌初始自備的 90 元保證金，虧損是好幾倍的無底洞！"
+    },
+    {
+      correct: "<strong>✨ 答對了！成功避開高階衍生商品的隱蔽黑洞！</strong><br>反向 ETF（如台灣50反1）為了維持單日反向 1 倍的目標，基金經理人每天收盤前都必須進行期貨部位的『每日再平衡』。在劇烈暴漲暴跌、但最終回到原點的『區間盤整市』中，這種每日再平衡的操作會引發毀滅性的<b>波動損耗（複利減損）</b>，持有幾個月後，即使大盤指數沒變，反向 ETF 的淨值也早已被損耗殆盡。這類商品絕不可中長線持有！",
+      wrong: "<strong>❌ 這正是無數散戶與新手慘賠的結構性盲點：</strong><br>反向 ETF 的反向 1 倍僅承諾『單日』。在每天上下劇烈震盪的盤整市中，其特有的『每日再平衡機制』會產生極恐怖的『波動複利損耗（Volatility Drag）』，加上內扣費，大盤回到原點時它依然會大賠！這種環境下它最不適合長期持有。"
+    },
+    {
+      correct: "<strong>✨ 答對了！完全具備頂級信用交易者的倖存者思維！</strong><br>當股票融券過多（高券資比）且市值小、成交量低時，極易成為大戶惡意拉抬的『軋空誘餌』。主力故意鎖死漲停，讓放空者因為『流動性徹底歸零』，天天看著自己維持率崩盤，卻連排隊認賠買回的機會都沒有。做空絕對要避開流動性差的高券資比妖股。具備如此風控觀念，你非常不簡單！",
+      wrong: "<strong>❌ 這是極度危險的致命誤區：</strong><br>當小型股被主力強力拉抬且融券過多，會發生空方連環踩踏的『軋空行情（Short Squeeze）』。因為股票天天漲停鎖死，市場上根本沒有籌碼賣給你，導致你『想買回認賠都完全買不到』。此時若加碼攤平，只會面臨無限被宰割的下場。"
+    }
+  ];
 
   function goChapter(idx) {
     document.querySelectorAll('.chapter').forEach(c => c.style.display = 'none');
     document.querySelectorAll('.chapter-btn').forEach(b => b.classList.remove('active'));
     
     if (idx === 'final') {
-        document.getElementById('ch-final').style.display = 'block';
+      document.getElementById('ch-6').style.display = 'block';
     } else {
-        document.getElementById(`ch-${idx}`).style.display = 'block';
-        document.querySelectorAll('.chapter-btn')[idx].classList.add('active');
-        if (idx === 5) updateSimulator(); // 進入模擬器頁面時初始化
+      document.getElementById(`ch-${idx}`).style.display = 'block';
+      document.querySelectorAll('.chapter-btn')[idx].classList.add('active');
+      if (idx === 5) updateSimulator(); // 進入第六課時初始化模擬器
     }
+    
     window.scrollTo({ top: 0, behavior: 'smooth' });
     updateProgress();
   }
@@ -373,62 +545,100 @@
   function answer(chIdx, optIdx, isCorrect) {
     if (quizDone[chIdx]) return;
     quizDone[chIdx] = true;
+
     const opts = document.querySelectorAll(`#ch-${chIdx} .quiz-opt`);
-    opts[optIdx].classList.add(isCorrect ? 'correct' : 'wrong');
+    opts.forEach((btn, index) => {
+      btn.disabled = true;
+      if (index === optIdx) {
+        btn.classList.add(isCorrect ? 'correct' : 'wrong');
+      }
+    });
+
     if (isCorrect) correctCount++;
+
     const fb = document.getElementById(`q${chIdx}-fb`);
-    fb.innerHTML = isCorrect ? "✅ 答對了！理解精確。" : "❌ 觀念有誤。做空方向與傳統相反，請留意。";
-    fb.className = "quiz-feedback show " + (isCorrect ? "correct-fb" : "wrong-fb");
-    document.getElementById(`q${chIdx}-next`).style.display = "inline-flex";
+    fb.className = 'quiz-feedback show ' + (isCorrect ? 'correct-fb' : 'wrong-fb');
+    fb.innerHTML = isCorrect ? quizExplanations[chIdx].correct : quizExplanations[chIdx].wrong;
+
+    document.getElementById(`q${chIdx}-next`).style.display = 'inline-flex';
     updateProgress();
   }
 
   function nextChapter(from) {
-    document.querySelectorAll('.chapter-btn')[from].classList.add('done');
+    document.querySelectorAll('.chapter-nav .chapter-btn')[from].classList.add('done');
     goChapter(from + 1);
   }
 
   function updateProgress() {
-    const done = quizDone.filter(Boolean).length;
-    const isFinal = document.getElementById('ch-final').style.display === 'block';
-    const pct = isFinal ? 100 : Math.round((done / totalChapters) * 100);
+    const doneCount = quizDone.filter(Boolean).length;
+    const isFinalActive = document.getElementById('ch-6').style.display === 'block';
+    const pct = isFinalActive ? 100 : Math.round((doneCount / (totalChapters + 1)) * 100); // 加上模擬器一課
     document.getElementById('progressBar').style.width = pct + '%';
     document.getElementById('progressPct').textContent = pct + '%';
   }
 
-  // SIMULATOR LOGIC
+  // ── 融券維持率模擬實驗室核心邏輯 (精確對齊台灣法規公式) ──
   const sellIn = document.getElementById('sellPriceInput');
   const buyIn = document.getElementById('buyPriceInput');
   
   function updateSimulator() {
     const sell = parseFloat(sellIn.value);
-    const buy = parseFloat(buyIn.value);
+    const buy = parseFloat(buyIn.value); // 此處 buy 代表當前市場最新股票價格
+    
     document.getElementById('sellPriceDisplay').textContent = `NT$ ${sell}`;
     document.getElementById('buyPriceDisplay').textContent = `NT$ ${buy}`;
     
-    const margin = sell * 0.9;
-    const diff = sell - buy;
-    const roi = (diff / margin) * 100;
+    // 台灣證券交易所標準法規公式
+    const margin = sell * 0.9;             // 90% 自備保證金
+    const totalCollateral = sell + margin; // 分子：券商保管之總擔保價值 (1.9倍)
+    const marginRatio = (totalCollateral / buy) * 100; // 融券維持率公式
+    const diff = sell - buy;               // 每股純盈虧
+    const roi = (diff / margin) * 100;     // 融券投資報酬率 (相對於自備保證金本金)
 
     document.getElementById('marginVal').textContent = `NT$ ${margin.toFixed(0)}`;
+    document.getElementById('collateralVal').textContent = `NT$ ${totalCollateral.toFixed(0)}`;
+    
+    const ratioEl = document.getElementById('ratioVal');
+    ratioEl.textContent = `${marginRatio.toFixed(1)}%`;
+    
     const diffEl = document.getElementById('diffVal');
     const roiEl = document.getElementById('roiVal');
     const msgEl = document.getElementById('simMessage');
 
-    if (diff >= 0) {
-        diffEl.textContent = `NT$ +${diff}`;
-        diffEl.style.color = "var(--green)";
-        roiEl.textContent = `+${roi.toFixed(1)}%`;
-        roiEl.style.color = "var(--green)";
-        msgEl.innerHTML = "📈 <strong>盈餘狀態：</strong>股價下跌，您獲利了！";
-        msgEl.style.color = "var(--green)";
-    } else {
-        diffEl.textContent = `NT$ ${diff}`;
+    // 三層動態反饋機制：安全獲利 ➔ 軋空警戒 ➔ 跌破130%斷頭毀滅
+    if (marginRatio < 130) {
+        ratioEl.style.color = "var(--loss-red)";
+        diffEl.textContent = `NT$ ${diff.toFixed(0)}`;
         diffEl.style.color = "var(--loss-red)";
         roiEl.textContent = `${roi.toFixed(1)}%`;
         roiEl.style.color = "var(--loss-red)";
-        msgEl.innerHTML = "🔥 <strong>危險！被軋空：</strong>股價暴漲，您的保證金正在燃燒！";
-        msgEl.style.color = "var(--loss-red)";
+        
+        msgEl.innerHTML = "💥 <b>窒息警告：維持率跌破 130% 斷頭死線！</b><br>由於股價逆勢暴漲，您的即時維持率已低於 130%。券商將正式向您發出『限期追繳通知書』。若未能在指定工作天內補足資金，券商將在開盤直接啟動<b>『強制斷頭買回』</b>平倉，您將被迫在最高點實現數倍本金的毀滅性慘賠！";
+        msgEl.style.background = "#FADBD8";
+        msgEl.style.color = "#C0392B";
+        msgEl.style.borderColor = "#E74C3C";
+    } else if (diff >= 0) {
+        ratioEl.style.color = "var(--green)";
+        diffEl.textContent = `NT$ +${diff.toFixed(0)}`;
+        diffEl.style.color = "var(--green)";
+        roiEl.textContent = `+${roi.toFixed(1)}%`;
+        roiEl.style.color = "var(--green)";
+        
+        msgEl.innerHTML = "🟢 <b>獲利狀態：股價符合看空預期！</b><br>目前股價低於您的融券賣出價。此時若執行回補歸還股票，您將成功實現高賣低買的跌價利潤。即時維持率處於極度安全的防禦區間。";
+        msgEl.style.background = "var(--green-light)";
+        msgEl.style.color = "var(--green)";
+        msgEl.style.borderColor = "#B7E4C7";
+    } else {
+        ratioEl.style.color = "var(--gold)";
+        diffEl.textContent = `NT$ ${diff.toFixed(0)}`;
+        diffEl.style.color = "var(--loss-red)";
+        roiEl.textContent = `${roi.toFixed(1)}%`;
+        roiEl.style.color = "var(--loss-red)";
+        
+        msgEl.innerHTML = "🟡 <b>軋空警告：股價不跌反漲，保證金正在燃燒！</b><br>目前市場價格已高於放空點，您的部位已陷入套牢虧損。雖然維持率尚未跌破 130% 的強制斷頭線，但風控時鐘正在倒數，請隨時準備啟動紀律停損機制。";
+        msgEl.style.background = "var(--gold-light)";
+        msgEl.style.color = "var(--gold)";
+        msgEl.style.borderColor = "#DCC078";
     }
   }
 
@@ -436,18 +646,21 @@
   buyIn.addEventListener('input', updateSimulator);
 
   function showFinal() {
+    // 將最後一課導覽按鈕標記為完成
+    document.querySelectorAll('.chapter-nav .chapter-btn')[5].classList.add('done');
     goChapter('final');
-    document.getElementById('finalScoreArea').innerHTML = `
-      <div class="score-display">特訓成績：<strong>${correctCount} / 5</strong> 題答對</div>
+    
+    const scoreArea = document.getElementById('score-area');
+    scoreArea.innerHTML = `
+      <div class="score-display">核心特訓成績：<strong>${correctCount} / ${totalChapters}</strong> 題完全答對</div>
     `;
   }
 
   function restart() {
-    quizDone.fill(false);
-    correctCount = 0;
-    location.reload();
+    location.reload(); // 重新整理網頁以完全重設計分與 UI 狀態
   }
 
+  // 初始啟動
   goChapter(0);
 </script>
 </body>
